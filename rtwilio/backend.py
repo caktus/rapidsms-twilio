@@ -15,10 +15,9 @@ from rapidsms.log.mixin import LoggerMixin
 
 class TwilioHandler(BaseHTTPServer.BaseHTTPRequestHandler, LoggerMixin):
     '''An HTTP server that handles messages to and from Twilio '''
-    # http://demo.twilio.com/welcome/sms
 
     def _logger_name(self):
-        return 'twilio-handler'
+        return 'handler/twilio'
 
     def do_POST(self):
         self.debug('POST')
@@ -27,16 +26,12 @@ class TwilioHandler(BaseHTTPServer.BaseHTTPRequestHandler, LoggerMixin):
         data = self.server.backend.parse_POST(data)
         message = self.server.backend.message(data)
         self.server.backend.route(message)
+        # immediately respond with OK message
+        self.send_response(200)
+        self.send_header("Content-type", "text/html")
+        self.end_headers()
+        self.wfile.write('OK')
         return
-
-    @classmethod
-    def outgoing(class_, message):
-        class_.backend.info("outgoing: {0}".format(message))
-        self.respond(200,'''
-        <Response>
-            <Sms>%s</Sms>
-        </Response>
-        ''' % message)
 
 
 class HttpServer (BaseHTTPServer.HTTPServer, SocketServer.ThreadingMixIn):
@@ -62,8 +57,8 @@ class TwilioBackend(BackendBase):
         # also set it in the handler class so we can callback
         self.handler.backend = self
 
-    def run (self):
-        self.debug('fooo')
+    def run(self):
+        self.debug('run')
         while self.running:
             msg = self.next_message()
             if msg:
@@ -75,14 +70,15 @@ class TwilioBackend(BackendBase):
             self.server.handle_request()
 
     def send(self, message):
-        self.handler.outgoing(message)
+        self.debug('send: %s' % message)
 
     def parse_POST(self, data):
         data = QueryDict(data)
-        self.debug('POST data: {0}'.format(pprint.pformat(data)))
+        self.debug(pprint.pformat(data, indent=4))
         return data
 
     def message(self, data):
+        self.debug('message')
         now = datetime.datetime.utcnow()
         sms = data['Body']
         sender = data['From']
