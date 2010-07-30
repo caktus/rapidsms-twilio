@@ -34,8 +34,8 @@ class TwilioBackend(BackendBase):
             self.server.handle_request()
 
     def handle_request(self, request):
-        self.debug('Request: %s' % pprint.pformat(dict(request.GET)))
-        message = self.message(request.GET)
+        self.debug('Request: %s' % pprint.pformat(dict(request.POST)))
+        message = self.message(request.POST)
         if message:
             self.route(message)
         return HttpResponse('OK')
