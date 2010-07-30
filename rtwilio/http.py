@@ -1,16 +1,26 @@
 import select
 import SocketServer
 
+from django import http
 from django.core.handlers.wsgi import WSGIHandler, STATUS_CODE_TEXT
 from django.core.servers.basehttp import WSGIServer, WSGIRequestHandler
 
+from rapidsms.log.mixin import LoggerMixin
 
-class TwilioHandler(WSGIHandler):
+
+class TwilioHandler(WSGIHandler, LoggerMixin):
     """ WSGIHandler without Django middleware calls """
+
+    def _logger_name(self):
+        return 'backend/twilio/handler'
 
     def __call__(self, environ, start_response):
         request = self.request_class(environ)
-        response = self.backend.handle_request(request)
+        try:
+            response = self.backend.handle_request(request)
+        except Exception, e:
+            self.exception(e)
+            response = http.HttpResponseBadRequest()
         try:
             status_text = STATUS_CODE_TEXT[response.status_code]
         except KeyError:
