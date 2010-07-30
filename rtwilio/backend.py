@@ -6,76 +6,50 @@ import SocketServer
 import BaseHTTPServer
 import select
 
-from django.http import QueryDict
+from django.http import HttpResponse
 from django.db import DatabaseError
+from django.core.servers.basehttp import WSGIServer, WSGIRequestHandler
+from django.core.handlers.wsgi import WSGIHandler
 
 from rapidsms.backends.base import BackendBase
 from rapidsms.log.mixin import LoggerMixin
 
 
-class TwilioHandler(BaseHTTPServer.BaseHTTPRequestHandler, LoggerMixin):
-    '''An HTTP server that handles messages to and from Twilio '''
+class TwilioHandler(WSGIHandler, LoggerMixin):
 
-    def _logger_name(self):
-        return 'handler/twilio'
-
-    def do_POST(self):
-        self.debug('POST')
-        content_length = self.headers['Content-Length']
-        data = self.rfile.read(int(content_length))
-        data = self.server.backend.parse_POST(data)
-        message = self.server.backend.message(data)
-        self.server.backend.route(message)
-        # immediately respond with OK message
-        self.send_response(200)
-        self.send_header("Content-type", "text/html")
-        self.end_headers()
-        self.wfile.write('OK')
-        return
-
-
-class HttpServer (BaseHTTPServer.HTTPServer, SocketServer.ThreadingMixIn):
-
-    def handle_request (self, timeout=1.0):
-        # don't block on handle_request
-        reads, writes, errors = (self,), (), ()
-        reads, writes, errors = select.select(reads, writes, errors, timeout)
-        if reads:
-            BaseHTTPServer.HTTPServer.handle_request(self)
+    def __call__(self, environ, start_response):
+        request = self.request_class(environ)
+        response = self.backend.handle_request(request)
+        status = '%s %s' % (response.status_code, 'OK')
+        response_headers = [(str(k), str(v)) for k, v in response.items()]
+        start_response(status, response_headers)
+        return response
 
 
 class TwilioBackend(BackendBase):
     '''A RapidSMS backend for Twilio (http://www.twilio.com/)'''
 
     def configure(self, host="localhost", port=8080, **kwargs):
-        self.handler = TwilioHandler
-        self.debug('Starting Twilio HTTP server on {0}:{1}'.format(host, port))
-        self.server = HttpServer((host, int(port)), self.handler)
-        # set this backend in the server instance so it
-        # can callback when a message is received
-        self.server.backend = self
-        # also set it in the handler class so we can callback
+        self.host = host
+        self.port = port
+        self.handler = TwilioHandler()
         self.handler.backend = self
 
-    def run(self):
-        self.debug('run')
+    def run(self):    
+        server_address = (self.host, int(self.port))
+        self.debug('Starting HTTP server on {0}:{1}'.format(*server_address))
+        self.server = WSGIServer(server_address, WSGIRequestHandler)
+        self.server.set_app(self.handler)
         while self.running:
-            msg = self.next_message()
-            if msg:
-                if handlers.msg_store.has_key(msg.connection.identity):
-                        handlers.msg_store[msg.connection.identity].append(msg.text)
-                else:
-                        handlers.msg_store[msg.connection.identity] = []
-                        handlers.msg_store[msg.connection.identity].append(msg.text)
             self.server.handle_request()
+
+    def handle_request(self, request):
+        message = self.message(request.GET)
+        self.route(message)
+        return HttpResponse('OK')
 
     def send(self, message):
         self.debug('send: %s' % message)
-
-    def parse_POST(self, data):
-        data = QueryDict(data)
-        self.debug(pprint.pformat(data, indent=4))
-        return data
 
     def message(self, data):
         self.debug('message')
