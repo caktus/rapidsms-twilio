@@ -1,8 +1,9 @@
 import unittest
 import urllib
 import logging
+import datetime
 
-from nose.tools import assert_equals, assert_raises, assert_true, assert_not_equals
+from nose.tools import assert_equals, assert_raises, assert_true, assert_false
 
 from rapidsms.router import Router
 from rapidsms.messages.incoming import IncomingMessage
@@ -26,11 +27,13 @@ basic_conf = {
 class MockRouter(Router):
     def start(self):
         self.running = True
+        self.accepting = True
         self._start_all_backends()
         self._start_all_apps()
 
     def stop(self):
         self.running = False
+        self.accepting = False
         self._stop_all_backends()
 
 
@@ -51,3 +54,13 @@ def test_bad_message():
     data = {'foo': 'moo'}
     message = backend.message(data)
     assert_equals(message, None)
+
+
+def test_backend_route():
+    router = MockRouter()
+    backend = TwilioBackend(name="twilio", router=router, **basic_conf)
+    router.start()
+    conn = Connection.objects.create(backend=backend.model,
+                                     identity='1112229999')
+    message = IncomingMessage(conn, 'Hi', datetime.datetime.now())
+    assert_true(backend.route(message), True)
