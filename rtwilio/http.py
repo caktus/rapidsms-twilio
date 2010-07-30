@@ -1,5 +1,4 @@
 import select
-import SocketServer
 
 from django import http
 from django.core.handlers.wsgi import WSGIHandler, STATUS_CODE_TEXT
@@ -31,7 +30,7 @@ class TwilioHandler(WSGIHandler, LoggerMixin):
         return response
 
 
-class HttpServer(WSGIServer, SocketServer.ThreadingMixIn):
+class HttpServer(WSGIServer):
     """ WSGIServer that doesn't block on handle_request """
 
     def handle_request(self, timeout=1.0):
