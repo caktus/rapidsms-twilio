@@ -15,6 +15,7 @@ class RapidWSGIHandler(WSGIHandler, LoggerMixin):
 
     def __call__(self, environ, start_response):
         request = self.request_class(environ)
+        self.debug('Request from %s' % request.get_host())
         try:
             response = self.backend.handle_request(request)
         except Exception, e:
