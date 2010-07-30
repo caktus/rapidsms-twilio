@@ -18,12 +18,12 @@ Add rtwilio to your Python path and setup the Twilio backend in your Django sett
     INSTALLED_BACKENDS = {
         "twilio": {
             "ENGINE": "rtwilio.backend"
-            'host': 'localhost',
-            'port': '8081',
+            'host': 'localhost', 'port': '8081', # used for spawned backend WSGI server
             'config': {
                 'account_sid': 'ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
                 'auth_token': 'YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY',
                 'number': '(###) ###-####',
+                'callback': 'http://<public-django-instance>/twilio/status-callback/', # optional callback URL
             }
         },
     }
