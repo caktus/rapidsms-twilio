@@ -61,6 +61,8 @@ class TwilioBackend(BackendBase):
             'To': message.connection.identity,
             'Body': message.text,
         }
+        if 'callback' in self.config:
+            data['StatusCallback'] = self.config['callback']
         self.debug('POST data: %s' % pprint.pformat(data))
         url = '/%s/Accounts/%s/SMS/Messages' % (self.api_version,
                                                 self.config['account_sid'])
