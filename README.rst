@@ -27,3 +27,5 @@ Add rtwilio to your Python path and setup the Twilio backend in your Django sett
             }
         },
     }
+
+Development by `Caktus Consulting Group <http://www.caktusgroup.com/>`_.
