@@ -9,7 +9,7 @@ from rapidsms.log.mixin import LoggerMixin
 
 
 class TwilioHandler(WSGIHandler, LoggerMixin):
-    """ WSGIHandler without Django middleware calls """
+    """ WSGIHandler without Django middleware and signal calls """
 
     def _logger_name(self):
         return 'backend/twilio/handler'
@@ -20,7 +20,7 @@ class TwilioHandler(WSGIHandler, LoggerMixin):
             response = self.backend.handle_request(request)
         except Exception, e:
             self.exception(e)
-            response = http.HttpResponseBadRequest()
+            response = http.HttpResponseServerError()
         try:
             status_text = STATUS_CODE_TEXT[response.status_code]
         except KeyError:
