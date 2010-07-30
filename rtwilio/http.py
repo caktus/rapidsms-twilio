@@ -1,7 +1,7 @@
 import select
 import SocketServer
 
-from django.core.handlers.wsgi import WSGIHandler
+from django.core.handlers.wsgi import WSGIHandler, STATUS_CODE_TEXT
 from django.core.servers.basehttp import WSGIServer, WSGIRequestHandler
 
 
@@ -11,7 +11,11 @@ class TwilioHandler(WSGIHandler):
     def __call__(self, environ, start_response):
         request = self.request_class(environ)
         response = self.backend.handle_request(request)
-        status = '%s %s' % (response.status_code, 'OK')
+        try:
+            status_text = STATUS_CODE_TEXT[response.status_code]
+        except KeyError:
+            status_text = 'UNKNOWN STATUS CODE'
+        status = '%s %s' % (response.status_code, status_text)
         response_headers = [(str(k), str(v)) for k, v in response.items()]
         start_response(status, response_headers)
         return response
