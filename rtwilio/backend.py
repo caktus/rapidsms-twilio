@@ -21,23 +21,26 @@ class TwilioBackend(BackendBase):
 
     def run(self):
         server_address = (self.host, int(self.port))
-        self.debug('Starting HTTP server on {0}:{1}'.format(*server_address))
+        self.info('Starting HTTP server on {0}:{1}'.format(*server_address))
         self.server = RapidHttpServer(server_address, WSGIRequestHandler)
         self.server.set_app(self.handler)
         while self.running:
             self.server.handle_request()
 
     def handle_request(self, request):
+        self.debug('Request: %s' % pprint.pformat(dict(request.GET)))
         message = self.message(request.GET)
-        self.route(message)
+        if message:
+            self.route(message)
         return HttpResponse('OK')
 
     def message(self, data):
-        self.debug('message')
+        sms = data.get('Body', '')
+        sender = data.get('From', '')
+        if not sms or sender:
+            self.error('Missing Body or From: %s' % pprint.pformat(dict(data)))
+            return None
         now = datetime.datetime.utcnow()
-        sms = data['Body']
-        sender = data['From']
-        self.debug('{0} {1} {2}'.format(sender, sms, now))
         try:
             msg = super(TwilioBackend, self).message(sender, sms, now)
         except DatabaseError, e:
