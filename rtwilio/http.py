@@ -7,11 +7,11 @@ from django.core.servers.basehttp import WSGIServer, WSGIRequestHandler
 from rapidsms.log.mixin import LoggerMixin
 
 
-class TwilioHandler(WSGIHandler, LoggerMixin):
+class RapidWSGIHandler(WSGIHandler, LoggerMixin):
     """ WSGIHandler without Django middleware and signal calls """
 
     def _logger_name(self):
-        return 'backend/twilio/handler'
+        return "%s/%s" % (self.backend._logger_name(), 'handler')
 
     def __call__(self, environ, start_response):
         request = self.request_class(environ)
@@ -30,7 +30,7 @@ class TwilioHandler(WSGIHandler, LoggerMixin):
         return response
 
 
-class HttpServer(WSGIServer):
+class RapidHttpServer(WSGIServer):
     """ WSGIServer that doesn't block on handle_request """
 
     def handle_request(self, timeout=1.0):

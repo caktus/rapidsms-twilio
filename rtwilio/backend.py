@@ -7,7 +7,7 @@ from django.core.servers.basehttp import WSGIRequestHandler
 
 from rapidsms.backends.base import BackendBase
 
-from rtwilio.http import HttpServer, TwilioHandler
+from rtwilio.http import RapidHttpServer, RapidWSGIHandler
 
 
 class TwilioBackend(BackendBase):
@@ -16,13 +16,13 @@ class TwilioBackend(BackendBase):
     def configure(self, host="localhost", port=8080, **kwargs):
         self.host = host
         self.port = port
-        self.handler = TwilioHandler()
+        self.handler = RapidWSGIHandler()
         self.handler.backend = self
 
     def run(self):
         server_address = (self.host, int(self.port))
         self.debug('Starting HTTP server on {0}:{1}'.format(*server_address))
-        self.server = HttpServer(server_address, WSGIRequestHandler)
+        self.server = RapidHttpServer(server_address, WSGIRequestHandler)
         self.server.set_app(self.handler)
         while self.running:
             self.server.handle_request()
