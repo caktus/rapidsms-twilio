@@ -1,5 +1,6 @@
 import pprint
 import datetime
+import twilio
 
 from django.db import DatabaseError
 from django.http import HttpResponse
@@ -13,11 +14,16 @@ from rtwilio.http import RapidHttpServer, RapidWSGIHandler
 class TwilioBackend(BackendBase):
     """ A RapidSMS backend for Twilio (http://www.twilio.com/) """
 
-    def configure(self, host="localhost", port=8080, **kwargs):
+    api_version = '2008-08-01'
+
+    def configure(self, host="localhost", port=8080, config=None, **kwargs):
         self.host = host
         self.port = port
         self.handler = RapidWSGIHandler()
         self.handler.backend = self
+        self.config = config
+        self.account = twilio.Account(self.config['account_sid'],
+                                      self.config['auth_token'])
 
     def run(self):
         server_address = (self.host, int(self.port))
@@ -37,7 +43,7 @@ class TwilioBackend(BackendBase):
     def message(self, data):
         sms = data.get('Body', '')
         sender = data.get('From', '')
-        if not sms or sender:
+        if not sms or not sender:
             self.error('Missing Body or From: %s' % pprint.pformat(dict(data)))
             return None
         now = datetime.datetime.utcnow()
@@ -46,8 +52,23 @@ class TwilioBackend(BackendBase):
         except DatabaseError, e:
             self.exception(e)
             raise
-        self.debug(msg)
         return msg
 
     def send(self, message):
-        self.debug('send: %s' % message)
+        self.info('Sending message: %s' % message)
+        data = {
+            'From': self.config['number'],
+            'To': message.connection.identity,
+            'Body': message.text,
+        }
+        self.debug('POST data: %s' % pprint.pformat(data))
+        url = '/%s/Accounts/%s/SMS/Messages' % (self.api_version,
+                                                self.config['account_sid'])
+        try:
+            response = self.account.request(url, 'POST', data)
+        except Exception, e:
+            self.exception(e.read())
+            response = None
+        if response:
+            self.info('SENT')
+            self.debug(response)
