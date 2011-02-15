@@ -6,32 +6,19 @@ from django.db import DatabaseError
 from django.http import HttpResponse
 from django.core.servers.basehttp import WSGIRequestHandler
 
-from rapidsms.backends.base import BackendBase
-
-from rtwilio.http import RapidHttpServer, RapidWSGIHandler
+from rapidsms.backends.http import RapidHttpBacked
 
 
-class TwilioBackend(BackendBase):
+class TwilioBackend(RapidHttpBacked):
     """ A RapidSMS backend for Twilio (http://www.twilio.com/) """
 
     api_version = '2008-08-01'
 
     def configure(self, host="localhost", port=8080, config=None, **kwargs):
-        self.host = host
-        self.port = port
-        self.handler = RapidWSGIHandler()
-        self.handler.backend = self
+        super(TwilioBackend, self).configure(host, port, **kwargs)
         self.config = config
         self.account = twilio.Account(self.config['account_sid'],
                                       self.config['auth_token'])
-
-    def run(self):
-        server_address = (self.host, int(self.port))
-        self.info('Starting HTTP server on {0}:{1}'.format(*server_address))
-        self.server = RapidHttpServer(server_address, WSGIRequestHandler)
-        self.server.set_app(self.handler)
-        while self.running:
-            self.server.handle_request()
 
     def handle_request(self, request):
         self.debug('Request: %s' % pprint.pformat(dict(request.POST)))

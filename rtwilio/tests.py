@@ -60,7 +60,9 @@ def test_backend_route():
     router = MockRouter()
     backend = TwilioBackend(name="twilio", router=router, **basic_conf)
     router.start()
+    Connection.objects.all().delete()
     conn = Connection.objects.create(backend=backend.model,
                                      identity='1112229999')
     message = IncomingMessage(conn, 'Hi', datetime.datetime.now())
     assert_true(backend.route(message), True)
+
