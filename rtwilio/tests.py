@@ -2,6 +2,7 @@ import unittest
 import urllib
 import logging
 import datetime
+import random
 
 from nose.tools import assert_equals, assert_raises, assert_true, assert_false
 
@@ -37,6 +38,16 @@ class MockRouter(Router):
         self._stop_all_backends()
 
 
+UNICODE_CHARS = [unichr(x) for x in xrange(1, 0xD7FF)]
+
+def random_unicode_string(max_length=255):
+    output = u''
+    for x in xrange(random.randint(1, max_length/2)):
+        c = UNICODE_CHARS[random.randint(0, len(UNICODE_CHARS)-1)]
+        output += c + u' '
+    return output
+
+
 def test_good_message():
     """ Make sure backend creates IncomingMessage properly """
     backend = TwilioBackend(name="twilio", router=None, **basic_conf)
@@ -65,4 +76,24 @@ def test_backend_route():
                                      identity='1112229999')
     message = IncomingMessage(conn, 'Hi', datetime.datetime.now())
     assert_true(backend.route(message), True)
+
+
+def test_outgoing_unicode_characters():
+    basic_conf['config']['encoding'] = 'UTF-8'
+    backend = TwilioBackend(name="twilio", router=None, **basic_conf)
+    bk = Backend.objects.create(name='test')
+    connection = Connection.objects.create(identity='1112229999', backend=bk)
+    text = random_unicode_string(20)
+    message = OutgoingMessage(connection, text)
+    data = backend.prepare_message(message)
+    assert_equals(data['Body'].decode('UTF-8'), text)
+
+
+def test_incoming_unicode_characters():
+    basic_conf['config']['encoding'] = 'UTF-8'
+    backend = TwilioBackend(name="twilio", router=None, **basic_conf)
+    text = random_unicode_string(20).encode(basic_conf['config']['encoding'])
+    data = {'From': '1112229999', 'Body': text}
+    message = backend.message(data)
+    assert_equals(text.decode(basic_conf['config']['encoding']), message.text)
 

@@ -33,6 +33,9 @@ class TwilioBackend(RapidHttpBacked):
         if not sms or not sender:
             self.error('Missing Body or From: %s' % pprint.pformat(dict(data)))
             return None
+        encoding = self.config.get('encoding', 'ascii')
+        if encoding and not isinstance(sms, unicode):
+            sms = sms.decode(encoding)
         now = datetime.datetime.utcnow()
         try:
             msg = super(TwilioBackend, self).message(sender, sms, now)
@@ -41,22 +44,29 @@ class TwilioBackend(RapidHttpBacked):
             raise
         return msg
 
-    def send(self, message):
-        self.info('Sending message: %s' % message)
+    def prepare_message(self, message):
+        encoding = self.config.get('encoding', 'ascii')
+        self.debug(encoding)
+        encoding_errors = self.config.get('encoding_errors', 'ignore')
         data = {
             'From': self.config['number'],
             'To': message.connection.identity,
-            'Body': message.text,
+            'Body': message.text.encode(encoding, encoding_errors),
         }
         if 'callback' in self.config:
             data['StatusCallback'] = self.config['callback']
+        return data
+
+    def send(self, message):
+        self.info('Sending message: %s' % message)
+        data = self.prepare_message(message)
         self.debug('POST data: %s' % pprint.pformat(data))
         url = '/%s/Accounts/%s/SMS/Messages' % (self.api_version,
                                                 self.config['account_sid'])
         try:
             response = self.account.request(url, 'POST', data)
         except Exception, e:
-            self.exception(e.read())
+            self.exception(e)
             response = None
         if response:
             self.info('SENT')
