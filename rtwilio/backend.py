@@ -46,7 +46,6 @@ class TwilioBackend(RapidHttpBackend):
 
     def prepare_message(self, message):
         encoding = self.config.get('encoding', 'ascii')
-        self.debug(encoding)
         encoding_errors = self.config.get('encoding_errors', 'ignore')
         data = {
             'From': self.config['number'],
