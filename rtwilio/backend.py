@@ -6,10 +6,10 @@ from django.db import DatabaseError
 from django.http import HttpResponse
 from django.core.servers.basehttp import WSGIRequestHandler
 
-from rapidsms.backends.http import RapidHttpBacked
+from rapidsms.backends.http import RapidHttpBackend
 
 
-class TwilioBackend(RapidHttpBacked):
+class TwilioBackend(RapidHttpBackend):
     """ A RapidSMS backend for Twilio (http://www.twilio.com/) """
 
     api_version = '2008-08-01'
