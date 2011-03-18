@@ -7,7 +7,7 @@ from setuptools import setup, find_packages
 # packages.remove('sample_project')
 setup(
     name='rtwilio',
-    version='0.0.1',
+    version='0.0.2',
     author='Caktus Consulting Group',
     author_email='solutions@caktusgroup.com',
     packages=find_packages(),
