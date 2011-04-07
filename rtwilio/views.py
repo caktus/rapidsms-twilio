@@ -3,6 +3,19 @@ from django.http import HttpResponse
 from rtwilio.models import TwilioResponse
 from rtwilio.forms import StatusCallbackForm
 
+from threadless_router.backends.http.froms import HttpForm
+from threadless_router.backends.http.views import BaseHttpBackendView
+
+
+class TwilioBackendView(BaseHttpBackendView):
+
+    form_class = HttpForm
+
+    def get_form_kwargs(self):
+        kwargs = super(SimpleHttpBackendView, self).get_form_kwargs()
+        kwargs.update({'identity': 'From', 'text': 'Body'})
+        return kwargs
+
 
 def status_callback(request):
     form = StatusCallbackForm(request.POST or None)
