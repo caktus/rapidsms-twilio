@@ -11,7 +11,7 @@ class TwilioBackend(BackendBase):
     api_version = '2008-08-01'
 
     def configure(self, config=None, **kwargs):
-        super(TwilioBackend, self).configure(host, port, **kwargs)
+        super(TwilioBackend, self).configure(**kwargs)
         self.config = config
         self.account = twilio.Account(self.config['account_sid'],
                                       self.config['auth_token'])
