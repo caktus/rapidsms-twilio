@@ -66,7 +66,7 @@ class TwilioBackend(RapidHttpBackend):
             response = self.account.request(url, 'POST', data)
         except Exception, e:
             self.exception(e)
-            response = None
-        if response:
-            self.info('SENT')
-            self.debug(response)
+            return False
+        self.info('SENT')
+        self.debug(response)
+        return True
