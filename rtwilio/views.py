@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from rtwilio.models import TwilioResponse
 from rtwilio.forms import StatusCallbackForm
 
-from threadless_router.backends.http.froms import HttpForm
+from threadless_router.backends.http.forms import HttpForm
 from threadless_router.backends.http.views import BaseHttpBackendView
 
 
