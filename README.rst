@@ -20,6 +20,7 @@ Add rtwilio to your Python path and setup the Twilio backend in your Django sett
             "ENGINE": "rtwilio.backend",
             'host': 'localhost', 'port': '8081', # used for spawned backend WSGI server
             'config': {
+                'api_version': '2010-04-01', # optional api version
                 'account_sid': 'ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
                 'auth_token': 'YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY',
                 'number': '(###) ###-####',
