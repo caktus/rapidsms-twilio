@@ -10,8 +10,11 @@ class TwilioBackend(BackendBase):
 
     api_version = '2008-08-01'
 
+    def start(self):
+        """ Override BackendBase.start(), which never returns """
+        self._running = True
+
     def configure(self, config=None, **kwargs):
-        super(TwilioBackend, self).configure(**kwargs)
         self.config = config
         self.account = twilio.Account(self.config['account_sid'],
                                       self.config['auth_token'])
