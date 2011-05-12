@@ -7,19 +7,36 @@ from django.http import HttpResponse
 from django.core.servers.basehttp import WSGIRequestHandler
 
 from rapidsms.backends.http import RapidHttpBackend
+from urllib2 import HTTPError
 
+
+compatible_api_versions = ["2008-08-01", "2010-04-01"]
+
+class APIVersionError(Exception):
+    pass
 
 class TwilioBackend(RapidHttpBackend):
     """ A RapidSMS backend for Twilio (http://www.twilio.com/) """
 
-    api_version = '2008-08-01'
-
     def configure(self, host="localhost", port=8080, config=None, **kwargs):
+                  
         super(TwilioBackend, self).configure(host, port, **kwargs)
         self.config = config
         self.account = twilio.Account(self.config['account_sid'],
                                       self.config['auth_token'])
+        
+        # has the added benefit of failing hard if this is set wrong
+        self.debug("using api version %s" % self.api_version)
 
+    @property
+    def api_version(self):
+        version = self.config.get("api_version", "2008-08-01")
+        if version not in compatible_api_versions:
+            raise APIVersionError("Allowed values for api_version are %s" %\
+                                  ", ".join(compatible_api_versions))
+        
+        
+    
     def handle_request(self, request):
         self.debug('Request: %s' % pprint.pformat(dict(request.POST)))
         message = self.message(request.POST)
@@ -64,6 +81,10 @@ class TwilioBackend(RapidHttpBackend):
                                                 self.config['account_sid'])
         try:
             response = self.account.request(url, 'POST', data)
+        except HTTPError, e:
+            self.exception(e)
+            self.error("Response from twilio: %s" % e.read())
+            return False
         except Exception, e:
             self.exception(e)
             return False
