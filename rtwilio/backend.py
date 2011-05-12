@@ -7,6 +7,7 @@ from django.http import HttpResponse
 from django.core.servers.basehttp import WSGIRequestHandler
 
 from rapidsms.backends.http import RapidHttpBackend
+from urllib2 import HTTPError
 
 
 class TwilioBackend(RapidHttpBackend):
@@ -64,6 +65,10 @@ class TwilioBackend(RapidHttpBackend):
                                                 self.config['account_sid'])
         try:
             response = self.account.request(url, 'POST', data)
+        except HTTPError, e:
+            self.exception(e)
+            self.error("Response from twilio: %s" % e.read())
+            return False
         except Exception, e:
             self.exception(e)
             return False
