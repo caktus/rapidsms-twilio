@@ -1,44 +1,40 @@
 import pprint
 import datetime
-import twilio
+from twilio.rest import TwilioRestClient
 
 from rapidsms.backends.base import BackendBase
 
 
 class TwilioBackend(BackendBase):
-    """ A RapidSMS backend for Twilio (http://www.twilio.com/) """
-
-    api_version = '2008-08-01'
+    """A RapidSMS backend for Twilio (http://www.twilio.com/)."""
 
     def start(self):
-        """ Override BackendBase.start(), which never returns """
+        """Override BackendBase.start(), which never returns."""
         self._running = True
 
     def configure(self, config=None, **kwargs):
         self.config = config
-        self.account = twilio.Account(self.config['account_sid'],
-                                      self.config['auth_token'])
+        self.client = TwilioRestClient(self.config['account_sid'],
+                                       self.config['auth_token'])
 
     def prepare_message(self, message):
         encoding = self.config.get('encoding', 'ascii')
         encoding_errors = self.config.get('encoding_errors', 'ignore')
         data = {
-            'From': self.config['number'],
-            'To': message.connection.identity,
-            'Body': message.text.encode(encoding, encoding_errors),
+            'from_': self.config['number'],
+            'to': message.connection.identity,
+            'body': message.text.encode(encoding, encoding_errors),
         }
         if 'callback' in self.config:
-            data['StatusCallback'] = self.config['callback']
+            data['status_callback'] = self.config['callback']
         return data
 
     def send(self, message):
         self.info('Sending message: %s' % message)
         data = self.prepare_message(message)
         self.debug('POST data: %s' % pprint.pformat(data))
-        url = '/%s/Accounts/%s/SMS/Messages' % (self.api_version,
-                                                self.config['account_sid'])
         try:
-            response = self.account.request(url, 'POST', data)
+            response = client.sms.messages.create(**data)
         except Exception, e:
             self.exception(e)
             return False

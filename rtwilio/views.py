@@ -1,20 +1,19 @@
 from django.http import HttpResponse
 
+from rapidsms.backends.http.views import GenericHttpBackendView
+
 from rtwilio.models import TwilioResponse
 from rtwilio.forms import StatusCallbackForm
 
-from threadless_router.backends.http.forms import HttpForm
-from threadless_router.backends.http.views import BaseHttpBackendView
 
+class TwilioBackendView(GenericHttpBackendView):
+    """Backend for processing incoming messages from Twilio.
 
-class TwilioBackendView(BaseHttpBackendView):
+    https://www.twilio.com/docs/api/twiml/sms/twilio_request
+    """
 
-    form_class = HttpForm
-
-    def get_form_kwargs(self):
-        kwargs = super(SimpleHttpBackendView, self).get_form_kwargs()
-        kwargs.update({'identity': 'From', 'text': 'Body'})
-        return kwargs
+    http_method_names = ['post']
+    params = {'identity_name': 'From', 'text_name': 'Body'}
 
 
 def status_callback(request):
