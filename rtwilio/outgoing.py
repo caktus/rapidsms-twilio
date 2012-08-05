@@ -34,7 +34,7 @@ class TwilioBackend(BackendBase):
         data = self.prepare_message(message)
         self.debug('POST data: %s' % pprint.pformat(data))
         try:
-            response = client.sms.messages.create(**data)
+            response = self.client.sms.messages.create(**data)
         except Exception, e:
             self.exception(e)
             return False
