@@ -7,8 +7,8 @@ from rtwilio.forms import StatusCallbackForm, TwilioForm
 
 
 class TwilioBackendView(GenericHttpBackendView):
-    """Backend for processing incoming messages from Twilio.
-
+    """
+    Backend view for processing incoming messages from Twilio.
     https://www.twilio.com/docs/api/twiml/sms/twilio_request
     """
 
