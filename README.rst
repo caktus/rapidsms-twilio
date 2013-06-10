@@ -1,31 +1,58 @@
--*- restructuredtext -*-
+rapidsms-twilio
+===============
 
-rtwilio
-=======
-
-Basic `Twilio <http://www.twilio.com>`_ backend for the `RapidSMS <http://www.rapidsms.org/>`_ project.
+`Twilio <http://www.twilio.com>`_ backend for the `RapidSMS
+<http://www.rapidsms.org/>`_ project.
 
 Requirements
 ------------
 
- * `python-twilio <http://pypi.python.org/pypi/twilio>`_ (pip install twilio)
+ * `python-twilio <http://pypi.python.org/pypi/twilio>`_
 
 Usage
 -----
 
-Add rtwilio to your Python path and setup the Twilio backend in your Django settings file. For example::
+Install ``rapidsms-twilio``::
+
+    pip install rapidsms-twilio
+
+Add ``rtwilio`` to your ``INSTALLED_APPS`` in your ``settings.py`` file::
+
+    INSTALLED_APPS = (
+        # other apps
+        'rtwilio',
+    )
+
+Add the following to your existing ``INSTALLED_BACKENDS`` configuration in your
+``settings.py`` file::
 
     INSTALLED_BACKENDS = {
-        "twilio": {
-            "ENGINE": "rtwilio.backend",
-            'host': 'localhost', 'port': '8081', # used for spawned backend WSGI server
+        # ...
+        # other backends, if any
+        "twilio-backend": {
+            "ENGINE": "rtwilio.outgoing.TwilioBackend",
             'config': {
-                'account_sid': 'ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-                'auth_token': 'YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY',
-                'number': '(###) ###-####',
-                'callback': 'http://<public-django-instance>/twilio/status-callback/', # optional callback URL
+                'account_sid': 'ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', # (required)
+                'auth_token': 'YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY', # (required)
+                'number': '(###) ###-####', # your Twilio phone number (required)
+                # 'callback': 'http://<public-django-instance>/twilio/status-callback/', # optional callback URL
             }
         },
     }
+
+Next, you need to add an endpoint to your ``urls.py`` for the newly created
+backend.  You can do this like so::
+
+    from django.conf.urls import patterns, include, url
+    from rtwilio.views import TwilioBackendView
+
+    urlpatterns = patterns('',
+        # ...
+        url(r"^backend/twilio/$",
+            TwilioBackendView.as_view(backend_name="twilio-backend")),
+    )
+
+Now inbound Twilio messages can be received at ``<your-server>/backend/twilio/``
+and outbound messages will be sent via the Twilio backend.
 
 Development by `Caktus Consulting Group <http://www.caktusgroup.com/>`_.
