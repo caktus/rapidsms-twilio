@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from rapidsms.backends.http.views import GenericHttpBackendView
 
 from rtwilio.models import TwilioResponse
-from rtwilio.forms import StatusCallbackForm
+from rtwilio.forms import StatusCallbackForm, TwilioForm
 
 
 class TwilioBackendView(GenericHttpBackendView):
@@ -13,7 +13,7 @@ class TwilioBackendView(GenericHttpBackendView):
     """
 
     http_method_names = ['post']
-    params = {'identity_name': 'From', 'text_name': 'Body'}
+    form_class = TwilioForm
 
 
 def status_callback(request):
