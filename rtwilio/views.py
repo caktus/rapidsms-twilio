@@ -1,4 +1,5 @@
 from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 
 from rapidsms.backends.http.views import GenericHttpBackendView
 
@@ -16,6 +17,7 @@ class TwilioBackendView(GenericHttpBackendView):
     form_class = TwilioForm
 
 
+@csrf_exempt
 def status_callback(request):
     form = StatusCallbackForm(request.POST or None)
     if form.is_valid():
