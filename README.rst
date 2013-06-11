@@ -1,6 +1,11 @@
 rapidsms-twilio
 ===============
 
+.. image::
+    https://api.travis-ci.org/caktus/rapidsms-twilio.png?branch=develop
+    :alt: Build Status
+    :target: http://travis-ci.org/caktus/rapidsms-twilio
+
 `Twilio <http://www.twilio.com>`_ backend for the `RapidSMS
 <http://www.rapidsms.org/>`_ project.
 
