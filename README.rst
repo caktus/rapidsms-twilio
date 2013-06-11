@@ -57,17 +57,15 @@ Now inbound Twilio messages can be received at ``<your-server>/backend/twilio/``
 and outbound messages will be sent via the Twilio backend.
 
 
-Callback URL
-------------
+Status Callback
+---------------
 
-Delivery Report
-===============
-
-RapidSMS can take advantage of Twilio's callback URL functionality. This is
-useful if you'd like to track the status of a message after it's been passed to
-Twilio for processing. Twilio will use a callback URL to notify us. Enabling
-this feature will allow you to view delivery reports, for each message, in the
-Django admin.
+RapidSMS can take advantage of Twilio's `status callback
+<http://www.twilio.com/docs/api/rest/sending-sms#post-parameters-optional>`_.
+This is useful if you'd like to track the status of a message after it's been
+passed to Twilio for processing. Twilio will use a callback URL to notify us.
+Enabling this feature will allow you to view delivery reports, for each
+message, in the Django admin.
 
 1. Make sure ``rtwilio`` is in ``INSTALLED_APPS``::
 
