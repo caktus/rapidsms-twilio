@@ -3,3 +3,4 @@
 *.egg
 dist
 build
+*.egg-info
