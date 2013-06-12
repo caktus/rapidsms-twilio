@@ -111,7 +111,7 @@ You can view delivery reports in the Django admin.
 Release Notes
 -------------
 
-* v0.1.1
+* v0.1.1 (Unreleased)
     * Remove callback URL field. It's not needed.
     * Require POST on callback view.
     * Add tests to callback view.
