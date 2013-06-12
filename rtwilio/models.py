@@ -5,7 +5,7 @@ from django.db import models
 
 class TwilioResponse(models.Model):
     date = models.DateTimeField()
-    ip_address = models.IPAddressField('IP Address')
+    ip_address = models.CharField('IP Address', max_length=64)
     message = models.CharField(max_length=64, primary_key=True)
     account = models.CharField(max_length=64)
     sender = models.CharField(max_length=16)
