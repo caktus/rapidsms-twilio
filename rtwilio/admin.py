@@ -4,11 +4,11 @@ from rtwilio.models import TwilioResponse
 
 
 class TwilioResponseAdmin(admin.ModelAdmin):
-    list_display = ('message', 'date', 'ip_address', 'sender', 'recipient',
+    list_display = ('message', 'date', 'sender', 'recipient',
                     'sent')
     ordering = ('-date',)
-    list_filter = ('date', 'ip_address')
-    
+    list_filter = ('date',)
+
     def sent(self, response):
         return response.status == 'sent'
     sent.boolean = True
