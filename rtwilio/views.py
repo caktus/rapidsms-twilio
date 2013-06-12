@@ -1,10 +1,16 @@
-from django.http import HttpResponse
+import logging
+
+from django.http import HttpResponse, HttpResponseBadRequest
+from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 
 from rapidsms.backends.http.views import GenericHttpBackendView
 
 from rtwilio.models import TwilioResponse
 from rtwilio.forms import StatusCallbackForm, TwilioForm
+
+
+logger = logging.getLogger(__name__)
 
 
 class TwilioBackendView(GenericHttpBackendView):
@@ -17,16 +23,23 @@ class TwilioBackendView(GenericHttpBackendView):
     form_class = TwilioForm
 
 
+@require_POST
 @csrf_exempt
 def status_callback(request):
     form = StatusCallbackForm(request.POST or None)
     if form.is_valid():
-        TwilioResponse.objects.create(
-            pk=form.cleaned_data['SmsSid'],
-            ip_address=request.get_host(),
-            account=form.cleaned_data['AccountSid'],
-            sender=form.cleaned_data['From'],
-            recipient=form.cleaned_data['To'],
-            status=form.cleaned_data['SmsStatus'],
-        )
-    return HttpResponse('OK')
+        try:
+            TwilioResponse.objects.create(
+                pk=form.cleaned_data['SmsSid'],
+                account=form.cleaned_data['AccountSid'],
+                sender=form.cleaned_data['From'],
+                recipient=form.cleaned_data['To'],
+                status=form.cleaned_data['SmsStatus'],
+            )
+        except:
+            logger.debug("callback data")
+            logger.debug(form.cleaned_data)
+            raise
+        return HttpResponse('OK')
+    else:
+        return HttpResponseBadRequest()

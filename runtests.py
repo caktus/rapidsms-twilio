@@ -26,6 +26,26 @@ if not settings.configured:
         PASSWORD_HASHERS=(
             'django.contrib.auth.hashers.MD5PasswordHasher',
         ),
+        LOGGING={
+            'version': 1,
+            'disable_existing_loggers': False,
+            'handlers': {
+                'null': {
+                    'level': 'DEBUG',
+                    'class': 'django.utils.log.NullHandler',
+                },
+            },
+            'loggers': {
+                'rapidsms': {
+                    'handlers': ['null'],
+                    'level': 'DEBUG',
+                },
+                'rtwilio': {
+                    'handlers': ['null'],
+                    'level': 'DEBUG',
+                }
+            }
+        },
     )
 
 

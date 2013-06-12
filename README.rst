@@ -107,4 +107,13 @@ message, in the Django admin.
 
 You can view delivery reports in the Django admin.
 
+
+Release Notes
+-------------
+
+* v0.1.1
+    * Remove callback URL field. It's not needed.
+    * Require POST on callback view.
+    * Add tests to callback view.
+
 Development by `Caktus Consulting Group <http://www.caktusgroup.com/>`_.
