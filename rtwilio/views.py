@@ -1,6 +1,7 @@
 import logging
 
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBadRequest
+from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 
 from rapidsms.backends.http.views import GenericHttpBackendView
@@ -22,6 +23,7 @@ class TwilioBackendView(GenericHttpBackendView):
     form_class = TwilioForm
 
 
+@require_POST
 @csrf_exempt
 def status_callback(request):
     form = StatusCallbackForm(request.POST or None)
@@ -29,13 +31,15 @@ def status_callback(request):
         try:
             TwilioResponse.objects.create(
                 pk=form.cleaned_data['SmsSid'],
-                ip_address=request.get_host(),
                 account=form.cleaned_data['AccountSid'],
                 sender=form.cleaned_data['From'],
                 recipient=form.cleaned_data['To'],
                 status=form.cleaned_data['SmsStatus'],
             )
-        except Exception:
+        except:
+            logger.debug("callback data")
             logger.debug(form.cleaned_data)
             raise
-    return HttpResponse('OK')
+        return HttpResponse('OK')
+    else:
+        return HttpResponseBadRequest()
