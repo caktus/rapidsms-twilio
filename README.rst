@@ -1,119 +1,51 @@
 rapidsms-twilio
 ===============
 
+`Twilio`_ backend for the `RapidSMS`_ project. Uses `python-twilio`_ to communicate with Twilio.
+
 .. image::
     https://api.travis-ci.org/caktus/rapidsms-twilio.png?branch=develop
     :alt: Build Status
     :target: http://travis-ci.org/caktus/rapidsms-twilio
 
-`Twilio <http://www.twilio.com>`_ backend for the `RapidSMS
-<http://www.rapidsms.org/>`_ project.
+Features
+--------
 
+* Compatible with RapidSMS v0.13+
+* Support for Twilio's `status callback <http://www.twilio.com/docs/api/rest/sending-sms#post-parameters-optional>`_
 
-Requirements
-------------
-
- * `python-twilio <http://pypi.python.org/pypi/twilio>`_
-
-Usage
------
-
-Install ``rapidsms-twilio``::
-
-    pip install rapidsms-twilio
-
-Add ``rtwilio`` to your ``INSTALLED_APPS`` in your ``settings.py`` file::
-
-    INSTALLED_APPS = (
-        # other apps
-        'rtwilio',
-    )
-
-Add the following to your existing ``INSTALLED_BACKENDS`` configuration in your
-``settings.py`` file::
-
-    INSTALLED_BACKENDS = {
-        # ...
-        # other backends, if any
-        "twilio-backend": {
-            "ENGINE": "rtwilio.outgoing.TwilioBackend",
-            'config': {
-                'account_sid': 'ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',  # (required)
-                'auth_token': 'YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY',  # (required)
-                'number': '(###) ###-####',  # your Twilio phone number (required)
-                # 'callback': 'http://<public-django-instance>/twilio/status-callback/',  # optional callback URL
-            }
-        },
-    }
-
-Next, you need to add an endpoint to your ``urls.py`` for the newly created
-backend.  You can do this like so::
-
-    from django.conf.urls import patterns, include, url
-    from rtwilio.views import TwilioBackendView
-
-    urlpatterns = patterns('',
-        # ...
-        url(r"^backend/twilio/$",
-            TwilioBackendView.as_view(backend_name="twilio-backend")),
-    )
-
-Now inbound Twilio messages can be received at ``<your-server>/backend/twilio/``
-and outbound messages will be sent via the Twilio backend.
-
-
-Status Callback
----------------
-
-RapidSMS can take advantage of Twilio's `status callback
-<http://www.twilio.com/docs/api/rest/sending-sms#post-parameters-optional>`_.
-This is useful if you'd like to track the status of a message after it's been
-passed to Twilio for processing. Twilio will use a callback URL to notify us.
-Enabling this feature will allow you to view delivery reports, for each
-message, in the Django admin.
-
-1. Make sure ``rtwilio`` is in ``INSTALLED_APPS``::
-
-    INSTALLED_APPS = (
-        # other apps
-        'rtwilio',
-    )
-
-2. Add the callback view to your urlconf::
-
-    urlpatterns = patterns('',
-        # ...
-        url(r'^backend/twilio/status-callback/$', status_callback,
-            name='twilio-status-callback'),
-    )
-
-3. Add the necessary database tables (omit ``--migrate`` if you're not using South)::
-
-    python manage.py syncdb --migrate
-
-4. Add the full callback URL to your settings::
-
-    INSTALLED_BACKENDS = {
-        # ...
-        # other backends, if any
-        "twilio-backend": {
-            "ENGINE": "rtwilio.outgoing.TwilioBackend",
-            'config': {
-                # same as before..
-                'callback': 'http://<public-django-instance>/backend/twilio/status-callback/',
-            }
-        },
-    }
-
-You can view delivery reports in the Django admin.
-
-
-Release Notes
+Installation
 -------------
 
-* v0.1.1 (Unreleased)
-    * Remove callback URL field. It's not needed.
-    * Require POST on callback view.
-    * Add tests to callback view.
+rapidsms-twilio requires Django >= 1.3 and Python >= 2.6.
+
+To install from PyPi::
+    
+    pip install rapidsms-twilio
+
+Documentation
+-------------
+
+Documentation on using rapidsms-twilio is available on 
+`Read The Docs <http://readthedocs.org/docs/rapidsms-twilio/>`_.
+
+
+License
+-------
+
+rapidsms-twilio is released under the BSD License. See the  `LICENSE
+<https://github.com/caktus/rapidsms-twilio/blob/master/LICENSE.txt>`_ file for
+more details.
+
+Contributing
+------------
+
+If you think you've found a bug or are interested in contributing to this
+project check out `rapidsms-twilio on Github <https://github.com/caktus
+/rapidsms-twilio>`_.
 
 Development by `Caktus Consulting Group <http://www.caktusgroup.com/>`_.
+
+.. _RapidSMS: http://www.rapidsms.org/
+.. _Twilio: http://www.twilio.com
+.. _python-twilio: http://pypi.python.org/pypi/twilio

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getting Started and Setup &mdash; rapidsms-twilio 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/caktus.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+    <link rel="top" title="rapidsms-twilio 0.1.0 documentation" href="index.html" />
+    <link rel="next" title="Status Callback" href="features.html" />
+    <link rel="prev" title="rapidsms-twilio" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="features.html" title="Status Callback"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="rapidsms-twilio"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">rapidsms-twilio 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="document">
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+
+<h3>rapidsms-twilio</h3>
+<p class="tagline">Twilio backend for the RapidSMS project.</p>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">rapidsms-twilio</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="features.html"
+                        title="next chapter">Status Callback</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/quick-start.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+        <div class="documentwrapper">
+            <div class="bodywrapper">
+                <div class="body">
+                    
+  <div class="section" id="getting-started-and-setup">
+<h1>Getting Started and Setup<a class="headerlink" href="#getting-started-and-setup" title="Permalink to this headline">¶</a></h1>
+<p>Below are the basic steps need to get rapidsms-twilio integrated into your
+RapidSMS project.</p>
+<p>Install <tt class="docutils literal"><span class="pre">rapidsms-twilio</span></tt>:</p>
+<div class="highlight-python"><pre>pip install rapidsms-twilio</pre>
+</div>
+<p>Add <tt class="docutils literal"><span class="pre">rtwilio</span></tt> to your <tt class="docutils literal"><span class="pre">INSTALLED_APPS</span></tt> in your <tt class="docutils literal"><span class="pre">settings.py</span></tt> file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="c"># other apps</span>
+    <span class="s">&#39;rtwilio&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Add the following to your existing <tt class="docutils literal"><span class="pre">INSTALLED_BACKENDS</span></tt> configuration in your
+<tt class="docutils literal"><span class="pre">settings.py</span></tt> file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">INSTALLED_BACKENDS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c"># ...</span>
+    <span class="c"># other backends, if any</span>
+    <span class="s">&quot;twilio-backend&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&quot;ENGINE&quot;</span><span class="p">:</span> <span class="s">&quot;rtwilio.outgoing.TwilioBackend&quot;</span><span class="p">,</span>
+        <span class="s">&#39;config&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">&#39;account_sid&#39;</span><span class="p">:</span> <span class="s">&#39;ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX&#39;</span><span class="p">,</span>  <span class="c"># (required)</span>
+            <span class="s">&#39;auth_token&#39;</span><span class="p">:</span> <span class="s">&#39;YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY&#39;</span><span class="p">,</span>  <span class="c"># (required)</span>
+            <span class="s">&#39;number&#39;</span><span class="p">:</span> <span class="s">&#39;(###) ###-####&#39;</span><span class="p">,</span>  <span class="c"># your Twilio phone number (required)</span>
+            <span class="c"># &#39;callback&#39;: &#39;http://&lt;public-django-instance&gt;/twilio/status-callback/&#39;,  # optional callback URL</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Next, you need to add an endpoint to your <tt class="docutils literal"><span class="pre">urls.py</span></tt> for the newly created
+backend.  You can do this like so:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">patterns</span><span class="p">,</span> <span class="n">include</span><span class="p">,</span> <span class="n">url</span>
+<span class="kn">from</span> <span class="nn">rtwilio.views</span> <span class="kn">import</span> <span class="n">TwilioBackendView</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="n">patterns</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span>
+    <span class="c"># ...</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r&quot;^backend/twilio/$&quot;</span><span class="p">,</span>
+        <span class="n">TwilioBackendView</span><span class="o">.</span><span class="n">as_view</span><span class="p">(</span><span class="n">backend_name</span><span class="o">=</span><span class="s">&quot;twilio-backend&quot;</span><span class="p">)),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Now inbound Twilio messages can be received at <tt class="docutils literal"><span class="pre">&lt;your-server&gt;/backend/twilio/</span></tt>
+and outbound messages will be sent via the Twilio backend.</p>
+</div>
+
+
+                </div>
+            </div>
+        </div>
+    <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="features.html" title="Status Callback"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="rapidsms-twilio"
+             >previous</a> |</li>
+        <li><a href="index.html">rapidsms-twilio 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; <a href="http://www.caktusgroup.com/">Copyright 2013, Caktus Consulting Group, LLC</a>.
+        Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>

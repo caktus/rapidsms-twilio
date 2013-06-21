@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Status Callback &mdash; rapidsms-twilio 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/caktus.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+    <link rel="top" title="rapidsms-twilio 0.1.0 documentation" href="index.html" />
+    <link rel="next" title="Release History" href="releases.html" />
+    <link rel="prev" title="Getting Started and Setup" href="quick-start.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="releases.html" title="Release History"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="quick-start.html" title="Getting Started and Setup"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">rapidsms-twilio 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="document">
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+
+<h3>rapidsms-twilio</h3>
+<p class="tagline">Twilio backend for the RapidSMS project.</p>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="quick-start.html"
+                        title="previous chapter">Getting Started and Setup</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="releases.html"
+                        title="next chapter">Release History</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/features.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+        <div class="documentwrapper">
+            <div class="bodywrapper">
+                <div class="body">
+                    
+  <div class="section" id="status-callback">
+<h1>Status Callback<a class="headerlink" href="#status-callback" title="Permalink to this headline">¶</a></h1>
+<p>RapidSMS can take advantage of Twilio&#8217;s <a class="reference external" href="http://www.twilio.com/docs/api/rest/sending-sms#post-parameters-optional">status callback</a>.
+This is useful if you&#8217;d like to track the status of a message after it&#8217;s been
+passed to Twilio for processing. Twilio will use a callback URL to notify us.
+Enabling this feature will allow you to view delivery reports, for each
+message, in the Django admin.</p>
+<ol class="arabic">
+<li><p class="first">Make sure <tt class="docutils literal"><span class="pre">rtwilio</span></tt> is in <tt class="docutils literal"><span class="pre">INSTALLED_APPS</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="c"># other apps</span>
+    <span class="s">&#39;rtwilio&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Add the callback view to your urlconf:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">urlpatterns</span> <span class="o">=</span> <span class="n">patterns</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span>
+    <span class="c"># ...</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r&#39;^backend/twilio/status-callback/$&#39;</span><span class="p">,</span> <span class="n">status_callback</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s">&#39;twilio-status-callback&#39;</span><span class="p">),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Add the necessary database tables (omit <tt class="docutils literal"><span class="pre">--migrate</span></tt> if you&#8217;re not using South):</p>
+<div class="highlight-python"><pre>python manage.py syncdb --migrate</pre>
+</div>
+</li>
+<li><p class="first">Add the full callback URL to your settings:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">INSTALLED_BACKENDS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c"># ...</span>
+    <span class="c"># other backends, if any</span>
+    <span class="s">&quot;twilio-backend&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&quot;ENGINE&quot;</span><span class="p">:</span> <span class="s">&quot;rtwilio.outgoing.TwilioBackend&quot;</span><span class="p">,</span>
+        <span class="s">&#39;config&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="c"># same as before..</span>
+            <span class="s">&#39;callback&#39;</span><span class="p">:</span> <span class="s">&#39;http://&lt;public-django-instance&gt;/backend/twilio/status-callback/&#39;</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<p>You can view delivery reports in the Django admin.</p>
+</div>
+
+
+                </div>
+            </div>
+        </div>
+    <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="releases.html" title="Release History"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="quick-start.html" title="Getting Started and Setup"
+             >previous</a> |</li>
+        <li><a href="index.html">rapidsms-twilio 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; <a href="http://www.caktusgroup.com/">Copyright 2013, Caktus Consulting Group, LLC</a>.
+        Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>
