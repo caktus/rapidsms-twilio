@@ -1,6 +1,7 @@
 import pprint
 import logging
-import datetime
+
+from twilio import TwilioRestException
 from twilio.rest import TwilioRestClient
 
 from rapidsms.backends.base import BackendBase
@@ -36,6 +37,10 @@ class TwilioBackend(BackendBase):
             self.debug('POST data: %s' % pprint.pformat(data))
             try:
                 self.client.sms.messages.create(**data)
+            except TwilioRestException:
+                # Twilio says the number is bad. Don't raise this error because
+                # it will never succeed on retry
+                logger.exception("Failed to create Twilio message.")
             except Exception:
-                logger.exception("Failed to create Twilio message")
+                logger.exception("Non-Twilio error.")
                 raise
