@@ -32,6 +32,7 @@ class TwilioBackend(BackendBase):
     def send(self, id_, text, identities, context={}):
         logger.debug('Sending message: %s' % text)
         data = self.prepare_message(id_, text, identities, context)
+        failed_identities = []
         for identity in identities:
             data['to'] = identity
             self.debug('POST data: %s' % pprint.pformat(data))
@@ -40,7 +41,9 @@ class TwilioBackend(BackendBase):
             except TwilioRestException:
                 # Twilio says the number is bad. Don't raise this error because
                 # it will never succeed on retry
+                failed_identities.append(identity)
                 logger.exception("Failed to create Twilio message.")
             except Exception:
                 logger.exception("Non-Twilio error.")
                 raise
+        return failed_identities
