@@ -35,7 +35,7 @@ class TwilioBackend(BackendBase):
         failed_identities = []
         for identity in identities:
             data['to'] = identity
-            self.debug('POST data: %s' % pprint.pformat(data))
+            logger.debug('POST data: %s' % pprint.pformat(data))
             try:
                 self.client.sms.messages.create(**data)
             except TwilioRestException:
