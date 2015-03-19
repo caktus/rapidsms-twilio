@@ -10,7 +10,7 @@ env:
   - TOXENV=py27-dj17-rsms13,py27-dj17-rsms14,py27-dj17-rsms15,py27-dj17-rsms16,py27-dj17-rsms17,py27-dj17-rsms18,py27-dj17-rsms19
 
 install:
-  - pip install -q tox>=1.8,<2.0
+  - pip install -q "tox>=1.8,<2.0"
 
 script:
   - tox
