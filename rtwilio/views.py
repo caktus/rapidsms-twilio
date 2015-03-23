@@ -1,16 +1,46 @@
+import functools
 import logging
 
+from django.conf import settings
 from django.http import HttpResponse, HttpResponseBadRequest
+from django.utils.decorators import available_attrs
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 
 from rapidsms.backends.http.views import GenericHttpBackendView
+from twilio.util import RequestValidator
 
 from rtwilio.models import TwilioResponse
 from rtwilio.forms import StatusCallbackForm, TwilioForm
 
 
 logger = logging.getLogger(__name__)
+
+
+def validate_twilio_signature(func=None, backend_name='twilio-backend'):
+    """View decorator to validate requests from Twilio per http://www.twilio.com/docs/security."""
+
+    def _dec(view_func):
+        @functools.wraps(view_func, assigned=available_attrs(view_func))
+        def _wrapped_view(request, *args, **kwargs):
+            backend = kwargs.get('backend_name', backend_name)
+            config = settings.INSTALLED_BACKENDS[backend]['config']
+            validator = RequestValidator(config['auth_token'])
+            signature = request.META.get('HTTP_X_TWILIO_SIGNATURE', '')
+            url = request.build_absolute_uri()
+            body = {}
+            if request.method == 'POST':
+                body = request.POST
+            if validator.validate(url, body, signature):
+                return view_func(request, *args, **kwargs)
+            else:
+                return HttpResponseBadRequest()
+        return _wrapped_view
+
+    if func is None:
+        return _dec
+    else:
+        return _dec(func)
 
 
 class TwilioBackendView(GenericHttpBackendView):
