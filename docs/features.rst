@@ -15,17 +15,17 @@ message, in the Django admin.
         'rtwilio',
     )
 
-2. Add the callback view to your urlconf::
+2. Add the callback view to your urlconf. If you are including all of the urls this
+is already handled for you::
 
-    urlpatterns = patterns('',
+    urlpatterns = [
         # ...
-        url(r'^backend/twilio/status-callback/$', status_callback,
-            name='twilio-status-callback'),
-    )
+        url(r'^backend/twilio/', include('rtwilio.urls')),
+    ]
 
-3. Add the necessary database tables (omit ``--migrate`` if you're not using South)::
+3. Add the necessary database tables::
 
-    python manage.py syncdb --migrate
+    python manage.py migrate rtwilio
 
 4. Add the full callback URL to your settings::
 

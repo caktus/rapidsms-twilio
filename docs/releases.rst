@@ -30,6 +30,19 @@ an example configuration.
 * Added Twilio request signature validation.
 
 
+Backwards Incompatible Changes
+______________________________
+
+* The default url patterns have been renamed. ``twilio-backend`` is now ``rtwilio-backend``
+and to be consistent ``status-callback`` is now ``rtwilio-status-callback`` to be consistent internally
+and with the package naming.
+* The default backend name is now ``rtwilio-backend`` if using the default url patterns.
+* The url setup in the quick start now uses an include and defaults to using ``/backend/twilio/`` and
+``/backend/twilio/status-callback/`` for the urls. If you were including the urls manually you are
+not affected by this change. Otherwise you need to ensure the setup is changed in the Twilio configuration
+as well.
+
+
 v0.2.0 (Released 2013-06-21)
 ----------------------------
 

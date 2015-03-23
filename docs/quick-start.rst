@@ -27,7 +27,8 @@ Add the following to your existing ``INSTALLED_BACKENDS`` configuration in your
                 'account_sid': 'ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',  # (required)
                 'auth_token': 'YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY',  # (required)
                 'number': '(###) ###-####',  # your Twilio phone number (required)
-                # 'callback': 'http://<public-django-instance>/twilio/status-callback/',  # optional callback URL
+                # optional callback URL
+                # 'callback': 'http://<public-django-instance>/backend/twilio/status-callback/',
             }
         },
     }
@@ -35,14 +36,12 @@ Add the following to your existing ``INSTALLED_BACKENDS`` configuration in your
 Next, you need to add an endpoint to your ``urls.py`` for the newly created
 backend.  You can do this like so::
 
-    from django.conf.urls import patterns, include, url
-    from rtwilio.views import TwilioBackendView
+    from django.conf.urls import include, url
 
-    urlpatterns = patterns('',
+    urlpatterns = [
         # ...
-        url(r"^backend/twilio/$",
-            TwilioBackendView.as_view(backend_name="twilio-backend")),
-    )
+        url(r'^backend/twilio/', include('rtwilio.urls')),
+    ]
 
 Now inbound Twilio messages can be received at ``<your-server>/backend/twilio/``
 and outbound messages will be sent via the Twilio backend.
