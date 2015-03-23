@@ -4,6 +4,13 @@ Release History
 Release and change history for rapidsms-twilio
 
 
+v1.0.0 (Released TBD)
+----------------------------
+
+* Improved ``tox`` testing support for RapidSMS and Django version combinations.
+* Relaxed ``twilio`` requirement.
+
+
 v0.2.0 (Released 2013-06-21)
 ----------------------------
 
