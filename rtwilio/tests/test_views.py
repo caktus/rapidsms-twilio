@@ -2,8 +2,7 @@ from mock import Mock, patch
 
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
-from django.test import TestCase, RequestFactory
-from django.test.utils import override_settings
+from django.test import TestCase, RequestFactory, override_settings
 
 from rapidsms.tests.harness import RapidTest, CreateDataMixin
 
@@ -21,9 +20,9 @@ EXAMPLE_CONFIG = {
 }
 
 
+@override_settings(ROOT_URLCONF='rtwilio.tests.urls')
 class TwilioViewTest(RapidTest):
 
-    urls = 'rtwilio.tests.urls'
     disable_phases = True
     backends = {
         'twilio-backend': EXAMPLE_CONFIG,
@@ -60,10 +59,10 @@ class TwilioViewTest(RapidTest):
         self.assertEqual('rtwilio-backend', message.connection.backend.name)
 
 
-@override_settings(INSTALLED_BACKENDS={'twilio-backend': EXAMPLE_CONFIG})
+@override_settings(
+    ROOT_URLCONF='rtwilio.tests.urls',
+    INSTALLED_BACKENDS={'twilio-backend': EXAMPLE_CONFIG})
 class CallbackTest(CreateDataMixin, TestCase):
-
-    urls = 'rtwilio.tests.urls'
 
     def setUp(self):
         self.valid_data = {
