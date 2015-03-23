@@ -76,19 +76,19 @@ class CallbackTest(CreateDataMixin, TestCase):
 
     def test_get_forbidden(self):
         """GET is not allowed."""
-        url = reverse("twilio-status-callback")
+        url = reverse("rtwilio-status-callback")
         response = self.client.get(url)
         self.assertEqual(405, response.status_code)
 
     def test_valid_data_callback(self):
         """Valid POSTs should return 200."""
-        url = reverse("twilio-status-callback")
+        url = reverse("rtwilio-status-callback")
         response = self.client.post(url, self.valid_data)
         self.assertEqual(200, response.status_code)
 
     def test_invalid_callback(self):
         """Invalid POSTs should return a 400."""
-        url = reverse("twilio-status-callback")
+        url = reverse("rtwilio-status-callback")
         del self.valid_data['To']
         response = self.client.post(url, self.valid_data)
         self.assertEqual(400, response.status_code)

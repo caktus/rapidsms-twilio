@@ -1,11 +1,12 @@
-from django.conf.urls.defaults import *
+from django.conf.urls import url
 
 from rtwilio import views
 
 
-urlpatterns = patterns('',
-    url(r"^(?P<backend_name>[\w-]+)/$", views.TwilioBackendView.as_view(),
-        name='twilio-backend'),
-    url(r'^twilio/status-callback/$', views.status_callback,
-        name='status-callback'),
-)
+urlpatterns = [
+    url(r'^status-callback/$', views.status_callback,
+        name='rtwilio-status-callback'),
+    url(r'^$',
+        views.TwilioBackendView.as_view(backend_name='rtwilio-backend'),
+        name='rtwilio-backend'),
+]
