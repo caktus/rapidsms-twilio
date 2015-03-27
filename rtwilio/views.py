@@ -3,7 +3,7 @@ import logging
 
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseBadRequest
-from django.utils.decorators import available_attrs, method_decorator
+from django.utils.decorators import available_attrs
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 
@@ -52,10 +52,7 @@ class TwilioBackendView(GenericHttpBackendView):
 
     http_method_names = ['post']
     form_class = TwilioForm
-
-    @method_decorator(validate_twilio_signature)
-    def dispatch(self, *args, **kwargs):
-        return super(TwilioBackendView, self).dispatch(*args, **kwargs)
+    backend_name = 'twilio-backend'
 
 
 @require_POST

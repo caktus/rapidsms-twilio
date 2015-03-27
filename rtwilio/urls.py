@@ -4,9 +4,7 @@ from rtwilio import views
 
 
 urlpatterns = [
-    url(r'^status-callback/$', views.status_callback,
-        name='rtwilio-status-callback'),
+    url(r'^status-callback/$', views.status_callback, name='twilio-status-callback'),
     url(r'^$',
-        views.TwilioBackendView.as_view(backend_name='rtwilio-backend'),
-        name='rtwilio-backend'),
+        views.validate_twilio_signature(views.TwilioBackendView.as_view()), name='twilio-backend'),
 ]

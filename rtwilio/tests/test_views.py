@@ -31,7 +31,7 @@ class TwilioViewTest(RapidTest):
     def test_invalid_response(self):
         """HTTP 400 should return if data is invalid."""
         data = {'invalid-phone': '1112223333', 'message': 'hi there'}
-        response = self.client.post(reverse('rtwilio-backend'), data)
+        response = self.client.post(reverse('twilio-backend'), data)
         self.assertEqual(response.status_code, 400)
 
     def test_get_disabled(self):
@@ -41,7 +41,7 @@ class TwilioViewTest(RapidTest):
                 "Body": self.random_string(50),
                 "AccountSid": self.random_string(34),
                 "SmsSid": self.random_string(34)}
-        response = self.client.get(reverse('rtwilio-backend'), data)
+        response = self.client.get(reverse('twilio-backend'), data)
         self.assertEqual(response.status_code, 405)
 
     def test_valid_post_message(self):
@@ -51,12 +51,12 @@ class TwilioViewTest(RapidTest):
                 "Body": "foo",
                 "AccountSid": self.random_string(34),
                 "SmsSid": self.random_string(34)}
-        response = self.client.post(reverse('rtwilio-backend'), data)
+        response = self.client.post(reverse('twilio-backend'), data)
         self.assertEqual(response.status_code, 200)
         message = self.inbound[0]
         self.assertEqual(data['Body'], message.text)
         self.assertEqual(message.fields['external_id'], data['SmsSid'])
-        self.assertEqual('rtwilio-backend', message.connection.backend.name)
+        self.assertEqual('twilio-backend', message.connection.backend.name)
 
 
 @override_settings(
@@ -75,19 +75,19 @@ class CallbackTest(CreateDataMixin, TestCase):
 
     def test_get_forbidden(self):
         """GET is not allowed."""
-        url = reverse("rtwilio-status-callback")
+        url = reverse("twilio-status-callback")
         response = self.client.get(url)
         self.assertEqual(405, response.status_code)
 
     def test_valid_data_callback(self):
         """Valid POSTs should return 200."""
-        url = reverse("rtwilio-status-callback")
+        url = reverse("twilio-status-callback")
         response = self.client.post(url, self.valid_data)
         self.assertEqual(200, response.status_code)
 
     def test_invalid_callback(self):
         """Invalid POSTs should return a 400."""
-        url = reverse("rtwilio-status-callback")
+        url = reverse("twilio-status-callback")
         del self.valid_data['To']
         response = self.client.post(url, self.valid_data)
         self.assertEqual(400, response.status_code)

@@ -4,6 +4,27 @@ Release History
 Release and change history for rapidsms-twilio
 
 
+v1.0.0 (Released TBD)
+----------------------------
+
+This is a clean up and stablizing release for rapidsms-twilio. This removes support for old
+versions of Django and RapidSMS. The setup has been streamlined by changing some of the defaults.
+
+
+Backwards Incompatible Changes
+______________________________
+
+* Support for Django < 1.7 has been dropped.
+* Support for RapidSMS < 0.18 has been dropped.
+* The default url patterns have been renamed. ``status-callback`` is now ``twilio-status-callback`` to be consistent internally
+and with the package naming.
+* The default backend name is now ``twilio-backend`` if using the default views and url patterns.
+* The url setup in the quick start now uses an include and defaults to using ``/backend/twilio/`` and
+``/backend/twilio/status-callback/`` for the urls. If you were including the urls manually you are
+not affected by this change. Otherwise you need to ensure the setup is changed in the Twilio configuration
+as well.
+
+
 v0.3.0 (Released 2015-03-27)
 ----------------------------
 
@@ -28,19 +49,6 @@ an example configuration.
 * Improved ``tox`` testing support for RapidSMS and Django version combinations.
 * Relaxed ``twilio`` requirement.
 * Added Twilio request signature validation.
-
-
-Backwards Incompatible Changes
-______________________________
-
-* The default url patterns have been renamed. ``twilio-backend`` is now ``rtwilio-backend``
-and to be consistent ``status-callback`` is now ``rtwilio-status-callback`` to be consistent internally
-and with the package naming.
-* The default backend name is now ``rtwilio-backend`` if using the default url patterns.
-* The url setup in the quick start now uses an include and defaults to using ``/backend/twilio/`` and
-``/backend/twilio/status-callback/`` for the urls. If you were including the urls manually you are
-not affected by this change. Otherwise you need to ensure the setup is changed in the Twilio configuration
-as well.
 
 
 v0.2.0 (Released 2013-06-21)
