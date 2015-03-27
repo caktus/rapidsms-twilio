@@ -101,7 +101,7 @@ class SignatureValidationTestCase(TestCase):
         self.factory = RequestFactory()
         # From http://www.twilio.com/docs/security example
         self.request = self.factory.post(
-            'myapp.php?foo=1&bar=2',
+            '/myapp.php?foo=1&bar=2',
             {
                 'CallSid': 'CA1234567890ABCDE',
                 'Caller': '+14158675309',
