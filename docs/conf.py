@@ -43,7 +43,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'rapidsms-twilio'
-copyright = u'2013, Caktus Consulting Group, LLC'
+copyright = u'2007-2015, Caktus Consulting Group, LLC'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

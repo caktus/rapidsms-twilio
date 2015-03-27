@@ -27,6 +27,7 @@ Add the following to your existing ``INSTALLED_BACKENDS`` configuration in your
                 'account_sid': 'ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',  # (required)
                 'auth_token': 'YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY',  # (required)
                 'number': '(###) ###-####',  # your Twilio phone number (required)
+                'validate': True,  # Require Twilio signature on all requests
                 # 'callback': 'http://<public-django-instance>/twilio/status-callback/',  # optional callback URL
             }
         },

@@ -1,14 +1,33 @@
-from django.test import TestCase
+from mock import Mock, patch
 
 from django.core.urlresolvers import reverse
+from django.http import HttpResponse
+from django.test import TestCase, RequestFactory
+from django.test.utils import override_settings
 
 from rapidsms.tests.harness import RapidTest, CreateDataMixin
+
+from ..views import validate_twilio_signature
+
+
+EXAMPLE_CONFIG = {
+    'ENGINE': 'rtwilio.outgoing.TwilioBackend',
+    'config': {
+        'account_sid': 'ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+        'auth_token': 'YYYYYYYYYYYYYYYYYYYYYYYYYY',
+        'number': '(###) ###-####',
+        'validate': False,
+    }
+}
 
 
 class TwilioViewTest(RapidTest):
 
     urls = 'rtwilio.tests.urls'
     disable_phases = True
+    backends = {
+        'twilio-backend': EXAMPLE_CONFIG,
+    }
 
     def test_invalid_response(self):
         """HTTP 400 should return if data is invalid."""
@@ -41,6 +60,7 @@ class TwilioViewTest(RapidTest):
         self.assertEqual('rtwilio-backend', message.connection.backend.name)
 
 
+@override_settings(INSTALLED_BACKENDS={'twilio-backend': EXAMPLE_CONFIG})
 class CallbackTest(CreateDataMixin, TestCase):
 
     urls = 'rtwilio.tests.urls'
@@ -72,3 +92,71 @@ class CallbackTest(CreateDataMixin, TestCase):
         del self.valid_data['To']
         response = self.client.post(url, self.valid_data)
         self.assertEqual(400, response.status_code)
+
+
+class SignatureValidationTestCase(TestCase):
+    """Validate request signature from Twilio."""
+
+    def setUp(self):
+        self.factory = RequestFactory()
+        # From http://www.twilio.com/docs/security example
+        self.request = self.factory.post(
+            '/myapp.php?foo=1&bar=2',
+            {
+                'CallSid': 'CA1234567890ABCDE',
+                'Caller': '+14158675309',
+                'Digits': '1234',
+                'From': '+14158675309',
+                'To': '+18005551212'
+            },
+            HTTP_X_TWILIO_SIGNATURE='RSOYDt4T1cUTdK1PDd93/VVr8B8=',
+            SERVER_NAME='mycompany.com',
+            SERVER_PORT='443',
+            **{'wsgi.url_scheme': 'https'}
+        )
+        self.config = {
+            'ENGINE': 'rtwilio.outgoing.TwilioBackend',
+            'config': {
+                'account_sid': 'ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+                'auth_token': '12345',
+                'number': '(###) ###-####',
+                'validate': True,
+            }
+        }
+        self.view = Mock()
+        self.view.return_value = HttpResponse('OK')
+
+    def test_valid_signature(self):
+        """Valid signature should pass request onto the view."""
+        wrapped = validate_twilio_signature(self.view)
+        with self.settings(INSTALLED_BACKENDS={'twilio-backend': self.config}):
+            result = wrapped(self.request)
+            self.assertEqual(result.status_code, 200)
+            self.view.assert_called_with(self.request)
+
+    def test_invalid_signature(self):
+        """Invalid signatures will return a 400 reponse."""
+        wrapped = validate_twilio_signature(self.view)
+        self.config['config']['auth_token'] = 'XXXX'
+        with self.settings(INSTALLED_BACKENDS={'twilio-backend': self.config}):
+            result = wrapped(self.request)
+            self.assertEqual(result.status_code, 400)
+            self.assertFalse(self.view.called)
+
+    def test_missing_signature(self):
+        """Signature will be validated (and fail) if missing."""
+        wrapped = validate_twilio_signature(self.view)
+        self.config['config']['auth_token'] = 'XXXX'
+        del self.request.META['HTTP_X_TWILIO_SIGNATURE']
+        with self.settings(INSTALLED_BACKENDS={'twilio-backend': self.config}):
+            result = wrapped(self.request)
+            self.assertEqual(result.status_code, 400)
+            self.assertFalse(self.view.called)
+
+    def test_non_default_backend(self):
+        """Allow using a non-default backend name with the decorator."""
+        wrapped = validate_twilio_signature(self.view, backend_name='other')
+        with self.settings(INSTALLED_BACKENDS={'other': self.config}):
+            result = wrapped(self.request)
+            self.assertEqual(result.status_code, 200)
+            self.view.assert_called_with(self.request)

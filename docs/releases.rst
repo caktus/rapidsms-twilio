@@ -4,11 +4,17 @@ Release History
 Release and change history for rapidsms-twilio
 
 
-v1.0.0 (Released TBD)
+v0.2.1 (Released 2015-03-27)
 ----------------------------
+
+Security release to add support for validating incoming requests from Twilio. For
+backwards compatibility this is not enabled by default. You should update your backend
+configuration to include the new ``validate`` configuration. See the quick-start for
+an example configuration.
 
 * Improved ``tox`` testing support for RapidSMS and Django version combinations.
 * Relaxed ``twilio`` requirement.
+* Added Twilio request signature validation.
 
 
 v0.2.0 (Released 2013-06-21)
@@ -24,7 +30,7 @@ Improved callback functionality and added needed tests:
 Bug Fixes
 _________
 
-- Fixed issue where using a port with the callbark URL caused an error.
+- Fixed issue where using a port with the callback URL caused an error.
 
 
 v0.1.0 (Released 2013-06-10)
