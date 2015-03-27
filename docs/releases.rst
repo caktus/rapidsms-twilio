@@ -4,6 +4,19 @@ Release History
 Release and change history for rapidsms-twilio
 
 
+v0.3.0 (Released 2015-03-27)
+----------------------------
+
+This is a minor release following up on the previous security release to turn the
+request validation on by default.
+
+
+Backwards Incompatible Changes
+______________________________
+
+* Twilio validation is now enforced by default. To turn this off you can set ``validate`` to ``False`` in your backend configuration. This is not recommended.
+
+
 v0.2.1 (Released 2015-03-27)
 ----------------------------
 
