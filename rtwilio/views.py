@@ -31,7 +31,7 @@ def validate_twilio_signature(func=None, backend_name='twilio-backend'):
             body = {}
             if request.method == 'POST':
                 body = request.POST
-            require_validation = config.get('validate', False)
+            require_validation = config.get('validate', True)
             if validator.validate(url, body, signature) or not require_validation:
                 return view_func(request, *args, **kwargs)
             else:
