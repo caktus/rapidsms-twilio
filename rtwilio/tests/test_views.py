@@ -2,7 +2,8 @@ from mock import Mock, patch
 
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
-from django.test import TestCase, RequestFactory, override_settings
+from django.test import TestCase, RequestFactory
+from django.test.utils import override_settings
 
 from rapidsms.tests.harness import RapidTest, CreateDataMixin
 
