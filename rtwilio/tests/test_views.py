@@ -1,18 +1,32 @@
-from mock import Mock
+from mock import Mock, patch
 
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
-from django.test import TestCase, RequestFactory
+from django.test import TestCase, RequestFactory, override_settings
 
 from rapidsms.tests.harness import RapidTest, CreateDataMixin
 
 from ..views import validate_twilio_signature
 
 
+EXAMPLE_CONFIG = {
+    'ENGINE': 'rtwilio.outgoing.TwilioBackend',
+    'config': {
+        'account_sid': 'ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+        'auth_token': 'YYYYYYYYYYYYYYYYYYYYYYYYYY',
+        'number': '(###) ###-####',
+        'validate': False,
+    }
+}
+
+
 class TwilioViewTest(RapidTest):
 
     urls = 'rtwilio.tests.urls'
     disable_phases = True
+    backends = {
+        'twilio-backend': EXAMPLE_CONFIG,
+    }
 
     def test_invalid_response(self):
         """HTTP 400 should return if data is invalid."""
@@ -45,6 +59,7 @@ class TwilioViewTest(RapidTest):
         self.assertEqual('rtwilio-backend', message.connection.backend.name)
 
 
+@override_settings(INSTALLED_BACKENDS={'twilio-backend': EXAMPLE_CONFIG})
 class CallbackTest(CreateDataMixin, TestCase):
 
     urls = 'rtwilio.tests.urls'
@@ -104,6 +119,7 @@ class SignatureValidationTestCase(TestCase):
                 'account_sid': 'ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
                 'auth_token': '12345',
                 'number': '(###) ###-####',
+                'validate': True,
             }
         }
         self.view = Mock()
