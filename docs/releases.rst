@@ -4,6 +4,13 @@ Release History
 Release and change history for rapidsms-twilio
 
 
+v0.2.2 (Released 2015-04-05)
+----------------------------
+
+Fixes a regression from the v0.2.2 release where the view was not marked as CSRF
+exempt.
+
+
 v0.2.1 (Released 2015-03-27)
 ----------------------------
 
