@@ -54,6 +54,7 @@ class TwilioBackendView(GenericHttpBackendView):
     form_class = TwilioForm
 
     @method_decorator(validate_twilio_signature)
+    @method_decorator(csrf_exempt)
     def dispatch(self, *args, **kwargs):
         return super(TwilioBackendView, self).dispatch(*args, **kwargs)
 
