@@ -58,6 +58,10 @@ class TwilioBackendView(GenericHttpBackendView):
     def dispatch(self, *args, **kwargs):
         return super(TwilioBackendView, self).dispatch(*args, **kwargs)
 
+    def form_valid(self, form):
+        super(TwilioBackendView, self).form_valid(form)
+        return HttpResponse('')
+
 
 @require_POST
 @csrf_exempt
@@ -77,6 +81,6 @@ def status_callback(request):
             logger.debug("callback data")
             logger.debug(form.cleaned_data)
             raise
-        return HttpResponse('OK')
+        return HttpResponse('')
     else:
         return HttpResponseBadRequest()
