@@ -25,6 +25,13 @@ not affected by this change. Otherwise you need to ensure the setup is changed i
 as well.
 
 
+v0.3.1 (Released 2015-04-05)
+----------------------------
+
+Fixes a regression from the v0.3 release where the view was not marked as CSRF
+except.
+
+
 v0.3.0 (Released 2015-03-27)
 ----------------------------
 
