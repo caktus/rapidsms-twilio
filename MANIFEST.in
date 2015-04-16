@@ -1,4 +1,4 @@
 include README.rst
 include LICENSE.txt
-include MANIFESET.in
+include MANIFEST.in
 recursive-exclude * *.py[co]
