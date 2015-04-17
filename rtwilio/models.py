@@ -1,6 +1,5 @@
-import datetime
-
 from django.db import models
+from django.utils import timezone
 
 
 class TwilioResponse(models.Model):
@@ -13,5 +12,5 @@ class TwilioResponse(models.Model):
 
     def save(self, **kwargs):
         if not self.date:
-            self.date = datetime.datetime.now()
+            self.date = timezone.now()
         return super(TwilioResponse, self).save(**kwargs)

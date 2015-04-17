@@ -52,6 +52,7 @@ class TwilioBackendView(GenericHttpBackendView):
 
     http_method_names = ['post']
     form_class = TwilioForm
+    backend_name = 'twilio-backend'
 
     @method_decorator(validate_twilio_signature)
     @method_decorator(csrf_exempt)

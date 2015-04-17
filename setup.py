@@ -38,8 +38,8 @@ setup(
     ],
     long_description=read_file('README.rst'),
     install_requires=(
-        'rapidsms>=0.13.0',
-        'django>=1.4',
+        'rapidsms>=0.18',
+        'django>=1.7',
         'twilio>=3.5,<4.0',
     ),
     test_suite="runtests.runtests",

@@ -4,10 +4,8 @@ python:
   - "2.7"
 
 env:
-  - TOXENV=py27-dj14-rsms13,py27-dj14-rsms14,py27-dj14-rsms15,py27-dj14-rsms16,py27-dj14-rsms17,py27-dj14-rsms18,py27-dj14-rsms19
-  - TOXENV=py27-dj15-rsms13,py27-dj15-rsms14,py27-dj15-rsms15,py27-dj15-rsms16,py27-dj15-rsms17,py27-dj15-rsms18,py27-dj15-rsms19
-  - TOXENV=py27-dj16-rsms13,py27-dj16-rsms14,py27-dj16-rsms15,py27-dj16-rsms16,py27-dj16-rsms17,py27-dj16-rsms18,py27-dj16-rsms19
-  - TOXENV=py27-dj17-rsms13,py27-dj17-rsms14,py27-dj17-rsms15,py27-dj17-rsms16,py27-dj17-rsms17,py27-dj17-rsms18,py27-dj17-rsms19
+  - TOXENV=py27-dj17-rsms18,py27-dj17-rsms19
+  - TOXENV=py27-dj18-rsms18,py27-dj18-rsms19
 
 install:
   - pip install -q "tox>=1.8,<2.0"
