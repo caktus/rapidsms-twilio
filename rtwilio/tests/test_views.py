@@ -56,7 +56,7 @@ class TwilioViewTest(RapidTest):
         message = self.inbound[0]
         self.assertEqual(data['Body'], message.text)
         self.assertEqual(message.fields['external_id'], data['SmsSid'])
-        self.assertEqual('twilio-backend', message.connection.backend.name)
+        self.assertEqual('twilio-backend', message.connections[0].backend.name)
 
 
 @override_settings(
