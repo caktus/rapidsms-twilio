@@ -1,6 +1,6 @@
 import pprint
 import logging
-import datetime
+
 from twilio.rest import TwilioRestClient
 
 from rapidsms.backends.base import BackendBase
