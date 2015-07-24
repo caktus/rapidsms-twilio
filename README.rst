@@ -11,13 +11,13 @@ rapidsms-twilio
 Features
 --------
 
-* Compatible with RapidSMS v0.13+
+* Compatible with RapidSMS v0.18+
 * Support for Twilio's `status callback <http://www.twilio.com/docs/api/rest/sending-sms#post-parameters-optional>`_
 
 Installation
 -------------
 
-rapidsms-twilio requires Django >= 1.3 and Python >= 2.6.
+rapidsms-twilio requires Django >= 1.7 and Python >= 2.7.
 
 To install from PyPi::
     
