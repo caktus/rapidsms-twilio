@@ -44,5 +44,5 @@ class TwilioBackend(BackendBase):
         if failed_identities:
             raise MessageSendingError(
                 "Messages to some identities failed.",
-                failed_identities=failed_identities
+                failed_identities
             )
