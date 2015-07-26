@@ -51,7 +51,7 @@ class SendTest(CreateDataMixin, TestCase):
     @patch('twilio.rest.resources.sms_messages.SmsMessages.create')
     def test_send_calls_twilio_api(self, mock_twilio):
         """Backend.send calls Twilio API."""
-        text = self.random_unicode_string()
+        text = self.random_string()
         identity = self.random_string()
         self.backend.send(id_=self.random_string(),
                           text=text,
