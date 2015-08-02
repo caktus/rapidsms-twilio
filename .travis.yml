@@ -9,11 +9,6 @@ cache:
 python:
   - "2.7"
 
-env:
-  - TOXENV=py27-dj17-rsms18,py27-dj17-rsms19
-  - TOXENV=py27-dj18-rsms18,py27-dj18-rsms19
-  - TOXENV=flake
-
 install:
   - pip install -q "tox>=1.8,<2.0"
 
