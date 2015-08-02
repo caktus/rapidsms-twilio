@@ -11,8 +11,22 @@ rapidsms-twilio
 Features
 --------
 
-* Compatible with RapidSMS v0.18+
+* Incoming (MO) and Outgoing (MT) SMS support.
 * Support for Twilio's `status callback <http://www.twilio.com/docs/api/rest/sending-sms#post-parameters-optional>`_
+
+
+Requirements
+------------
+
+* Python 2.7 or Python 3.3+
+* Django 1.7+
+* RapidSMS v0.18.0+
+
+Future versions: We currently support Django 1.8 with no pending deprecation warnings in our 1.0
+release. We expect each future point release to similarly support the next version of Django, so our
+1.1 release would support Django 1.9 with no pending deprecation warnings. Support for older Django
+versions may be dropped when the period of 'mainstream support' expires. See Django's `supported
+versions <https://www.djangoproject.com/download/>`_ documentation for those timelines.
 
 Installation
 -------------
@@ -20,13 +34,13 @@ Installation
 rapidsms-twilio requires Django >= 1.7 and Python >= 2.7.
 
 To install from PyPi::
-    
+
     pip install rapidsms-twilio
 
 Documentation
 -------------
 
-Documentation on using rapidsms-twilio is available on 
+Documentation on using rapidsms-twilio is available on
 `Read The Docs <http://readthedocs.org/docs/rapidsms-twilio/>`_.
 
 
