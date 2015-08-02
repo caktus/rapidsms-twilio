@@ -1,9 +1,11 @@
-from mock import Mock, patch
+try:
+    from unittest.mock import Mock
+except ImportError:
+    from mock import Mock
 
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
-from django.test import TestCase, RequestFactory
-from django.test.utils import override_settings
+from django.test import TestCase, RequestFactory, override_settings
 
 from rapidsms.tests.harness import RapidTest, CreateDataMixin
 
@@ -21,9 +23,9 @@ EXAMPLE_CONFIG = {
 }
 
 
+@override_settings(ROOT_URLCONF='rtwilio.tests.urls')
 class TwilioViewTest(RapidTest):
 
-    urls = 'rtwilio.tests.urls'
     disable_phases = True
     backends = {
         'twilio-backend': EXAMPLE_CONFIG,
@@ -32,7 +34,7 @@ class TwilioViewTest(RapidTest):
     def test_invalid_response(self):
         """HTTP 400 should return if data is invalid."""
         data = {'invalid-phone': '1112223333', 'message': 'hi there'}
-        response = self.client.post(reverse('rtwilio-backend'), data)
+        response = self.client.post(reverse('twilio-backend'), data)
         self.assertEqual(response.status_code, 400)
 
     def test_get_disabled(self):
@@ -42,7 +44,7 @@ class TwilioViewTest(RapidTest):
                 "Body": self.random_string(50),
                 "AccountSid": self.random_string(34),
                 "SmsSid": self.random_string(34)}
-        response = self.client.get(reverse('rtwilio-backend'), data)
+        response = self.client.get(reverse('twilio-backend'), data)
         self.assertEqual(response.status_code, 405)
 
     def test_valid_post_message(self):
@@ -52,18 +54,18 @@ class TwilioViewTest(RapidTest):
                 "Body": "foo",
                 "AccountSid": self.random_string(34),
                 "SmsSid": self.random_string(34)}
-        response = self.client.post(reverse('rtwilio-backend'), data)
+        response = self.client.post(reverse('twilio-backend'), data)
         self.assertEqual(response.status_code, 200)
         message = self.inbound[0]
         self.assertEqual(data['Body'], message.text)
         self.assertEqual(message.fields['external_id'], data['SmsSid'])
-        self.assertEqual('rtwilio-backend', message.connection.backend.name)
+        self.assertEqual('twilio-backend', message.connections[0].backend.name)
 
 
-@override_settings(INSTALLED_BACKENDS={'twilio-backend': EXAMPLE_CONFIG})
+@override_settings(
+    ROOT_URLCONF='rtwilio.tests.urls',
+    INSTALLED_BACKENDS={'twilio-backend': EXAMPLE_CONFIG})
 class CallbackTest(CreateDataMixin, TestCase):
-
-    urls = 'rtwilio.tests.urls'
 
     def setUp(self):
         self.valid_data = {

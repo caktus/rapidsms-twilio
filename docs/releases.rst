@@ -4,6 +4,31 @@ Release History
 Release and change history for rapidsms-twilio
 
 
+v1.0.0 (Released 2015-08-02)
+----------------------------
+
+This is a clean up and stablizing release for rapidsms-twilio. This removes support for old
+versions of Django and RapidSMS. The setup has been streamlined by changing some of the defaults.
+
+* Fix Twilio warning when returning data in callback response. Thanks
+  to `@lsgunth <https://github.com/lsgunth>`_.
+* Tox and Travis improvements (#16, #20)
+* Report failed messages back to RapidSMS (#8, #22)
+
+Backwards Incompatible Changes
+______________________________
+
+* Support for Django < 1.7 has been dropped.
+* Support for RapidSMS < 0.18 has been dropped.
+* The default url patterns have been renamed. ``status-callback`` is now ``twilio-status-callback``
+  to be consistent internally and with the package naming.
+* The default backend name is now ``twilio-backend`` if using the default views and url patterns.
+* The url setup in the quick start now uses an include and defaults to using ``/backend/twilio/``
+  and ``/backend/twilio/status-callback/`` for the urls. If you were including the urls manually you
+  are not affected by this change. Otherwise you need to ensure the setup is changed in the Twilio
+  configuration as well.
+
+
 v0.3.1 (Released 2015-04-05)
 ----------------------------
 

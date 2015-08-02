@@ -14,14 +14,23 @@ if not settings.configured:
             }
         },
         INSTALLED_APPS=(
+            'django.contrib.admin',
+            'django.contrib.auth',
+            'django.contrib.contenttypes',
+            'django.contrib.sessions',
             'rapidsms',
             'rtwilio',
         ),
         SITE_ID=1,
         SECRET_KEY='super-secret',
-        TEMPLATE_CONTEXT_PROCESSORS=(
-            'django.contrib.auth.context_processors.auth',
-            'django.core.context_processors.request',
+        MIDDLEWARE_CLASSES=(
+            'django.middleware.common.CommonMiddleware',
+            'django.contrib.sessions.middleware.SessionMiddleware',
+            'django.middleware.csrf.CsrfViewMiddleware',
+            'django.contrib.auth.middleware.AuthenticationMiddleware',
+            'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+            'django.contrib.messages.middleware.MessageMiddleware',
+            'django.middleware.clickjacking.XFrameOptionsMiddleware',
         ),
         ROOT_URLCONF='rtwilio.tests.urls',
         PASSWORD_HASHERS=(
@@ -54,8 +63,7 @@ from django.test.utils import get_runner
 
 
 def runtests():
-    if hasattr(django, 'setup'):
-        django.setup()
+    django.setup()
     TestRunner = get_runner(settings)
     test_runner = TestRunner(verbosity=1, interactive=True, failfast=False)
     failures = test_runner.run_tests(['rtwilio', ])

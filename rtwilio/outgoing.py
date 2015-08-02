@@ -1,9 +1,10 @@
 import pprint
 import logging
-import datetime
+
 from twilio.rest import TwilioRestClient
 
 from rapidsms.backends.base import BackendBase
+from rapidsms.errors import MessageSendingError
 
 
 logger = logging.getLogger(__name__)
@@ -31,11 +32,17 @@ class TwilioBackend(BackendBase):
     def send(self, id_, text, identities, context={}):
         logger.debug('Sending message: %s' % text)
         data = self.prepare_message(id_, text, identities, context)
+        failed_identities = []
         for identity in identities:
             data['to'] = identity
-            self.debug('POST data: %s' % pprint.pformat(data))
+            logger.debug('POST data: %s' % pprint.pformat(data))
             try:
                 self.client.sms.messages.create(**data)
             except Exception:
-                logger.exception("Failed to create Twilio message")
-                raise
+                failed_identities.append(identity)
+                logger.exception("Failed to create Twilio message.")
+        if failed_identities:
+            raise MessageSendingError(
+                "Messages to some identities failed.",
+                failed_identities
+            )
