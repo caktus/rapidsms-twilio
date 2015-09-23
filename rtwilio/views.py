@@ -67,7 +67,7 @@ class TwilioBackendView(GenericHttpBackendView):
 @require_POST
 @csrf_exempt
 @validate_twilio_signature
-def status_callback(request):
+def status_callback(request, backend_name=None):
     form = StatusCallbackForm(request.POST or None)
     if form.is_valid():
         try:

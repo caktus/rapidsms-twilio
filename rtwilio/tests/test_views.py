@@ -9,7 +9,7 @@ from django.test import TestCase, RequestFactory, override_settings
 
 from rapidsms.tests.harness import RapidTest, CreateDataMixin
 
-from ..views import validate_twilio_signature
+from ..views import validate_twilio_signature, status_callback
 
 
 EXAMPLE_CONFIG = {
@@ -94,6 +94,14 @@ class CallbackTest(CreateDataMixin, TestCase):
         del self.valid_data['To']
         response = self.client.post(url, self.valid_data)
         self.assertEqual(400, response.status_code)
+
+    def test_custom_backend_name(self):
+        """Should be able to provide backend_name to callback"""
+        request = RequestFactory().post('/fake-url')
+        response = status_callback(request, backend_name='twilio-backend')
+        # since we're not providing signature,  etc. it should not validate, but
+        # should not error either
+        self.assertEqual(response.status_code, 400)
 
 
 class SignatureValidationTestCase(TestCase):
