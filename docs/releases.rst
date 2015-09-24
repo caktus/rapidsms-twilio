@@ -4,6 +4,12 @@ Release History
 Release and change history for rapidsms-twilio
 
 
+v1.0.1 (Released 2015-09-24)
+----------------------------
+
+* Allow custom backends to be used with status callback (#24)
+
+
 v1.0.0 (Released 2015-08-02)
 ----------------------------
 
